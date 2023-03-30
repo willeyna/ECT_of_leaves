@@ -4,13 +4,19 @@ import ect
 import numpy as np
 
 # choose in this file the specifics of the ECT matrices
-N_ANGLES = [2, 4, 8, 16, 32]
-RESOLUTIONS = [10, 20, 30, 40, 50]
+N_ANGLES = [1]
+RESOLUTIONS = [2]
+# overall output path for all ect files
+ect_output_path = './leaf_ect/'
 
+
+# dont change under this ~~~~~
 dir_path = str(sys.argv[1])
+depth = int(sys.argv[2])
+
 # remove ./data/ and Scalexy from path to set up dir with same structure as data dir to store output data
-boneless_path = '/'.join(dir_path.split('/')[2:])
-output_path = os.path.join('./leaf_ect', boneless_path)
+boneless_path = '/'.join(dir_path.split('/')[depth:])
+output_path = os.path.join(ect_output_path, boneless_path)
 
 if not os.path.exists(output_path):
    os.makedirs(output_path)

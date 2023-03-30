@@ -1,43 +1,44 @@
 import os
+# changing directory structure probably breaks things :)  
+# where to read input data from 
+data_dir = '/mnt/research/IceCube/willey/ECT_of_leaves/hiding/contour_data/'
+# where to store ect data
+output_dir = './leaf_ect/'
+# where to put sb files for submission 
+sb_dir = './submit/'
 
-def write_sb(dir_name, name, hrs, mem):
+# hrs and memory for each job
+hrs = '1'
+mem = '8'
+
+def write_sb(input_dir, depth, name, hrs, mem):
     contents = f"""#!/bin/bash --login
 ########## SBATCH Lines for Resource Request ##########
-
 #SBATCH --time={hrs}:00:00
 #SBATCH --mem={mem}G
 #SBATCH --job-name {name}_ect
-#SBATCH --output /mnt/research/IceCube/willey/ECT_of_leaves/outputs/{name}_ect.out
-
+#SBATCH --output /mnt/research/morphology_lab/Code/ECT_of_leaves/outputs/{name}_ect.out
 ########## Command Lines to Run ##########
-cd /mnt/research/IceCube/willey/ECT_of_leaves/
-export PATH=$PATH:/mnt/research/IceCube/willey/conda3/bin/
-conda activate base
-/mnt/research/IceCube/willey/conda3/bin/python3 /mnt/research/IceCube/willey/ECT_of_leaves/compute_ect.py {dir_name}"""
+cd /mnt/research/morphology_lab/Code/ECT_of_leaves/
 
+python compute_ect.py {input_dir} {depth}"""
     return contents
 
-# 24hrs should be enough!! 48 to be very safe; max 10k files in a single directory
-hrs = str(input("How many hours per job?"))
-mem = str(input("How many GB of memory per job?"))
+# annoying variable for file naming purposes
+depth = len(data_dir.split('/'))-1
 
 sb_filenames = []
-
-data_dir = './contour_data/'
-sb_dir = './submit/'
-
-
 # loop through directories and create sb files in submit dir
 for root, dirs, files in os.walk(data_dir):
     # fix to ignore hidden files (git, ds_store, etc)
     cleaned_files = [f for f in files if not f[0] == '.']
     # choosing to use scaled xy coords
     if cleaned_files and 'Nonscale' not in root:
-        name = '_'.join(root.split('/')[2:])
+        name = '_'.join(root.split('/')[depth:])
         sb_filenames.append(name+'.sb')
-
+        
         # write sb for each directory of data files
-        sb_contents = write_sb(root, name, hrs, mem)
+        sb_contents = write_sb(root, depth, name, hrs, mem)
         fout=open(os.path.join(sb_dir, name + '.sb'), "w")
         fout.write(sb_contents)
         fout.close()
