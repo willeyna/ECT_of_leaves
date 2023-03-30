@@ -2,8 +2,10 @@
 
 Directory created by Nathan Willey Spring 2023 for pre-processing of leaf shape data into Euler Characteristic Transform data. This document serves to outline the data pipeline created here and the use of all the included files/functions defined. Please contact me for any missing information or help!
 
-Raw leaf data was found here: https://figshare.com/articles/dataset/Leaf_coordinates_zip/5056441/1
-Currently, leaf ECT data is stored at /mnt/research/morphology_lab/Results/ECT_of_leaves/leaf_ect and intermediate contour data is stored at /mnt/research/morphology_lab/Results/ECT_of_leaves/contour_data 
+Raw leaf data was found here: https://figshare.com/articles/dataset/Leaf_coordinates_zip/5056441/1 \
+Currently, leaf ECT data is stored at `/mnt/research/morphology_lab/Results/ECT_of_leaves/leaf_ect`\
+Intermediate contour data is stored at `/mnt/research/morphology_lab/Results/ECT_of_leaves/contour_data`\
+This directory is stored locally on the HPCC at `/mnt/research/morphology_lab/Code/ECT_of_leaves`
 
 Functions used are stored in `ect.py`
 
@@ -28,21 +30,21 @@ Else:
 1. Make a 2 Nearest Neighbor graph out of the pointcloud data
 2. Choosing leaf[0] and look for a walk around the leaf that starts and ends at this point that walks through at least half of the points
 3. If chosen, relabel those points according to the walk found
-4. If no walk is found from leaf[0], look at leaf[10 * k] and try to start the walk from there 
+4. If no walk is found from leaf[0], look at leaf[10 * k] (for interate k) and try to start the walk from there 
 
 This algorithm is performed by `contour_order()`
 
-A result of this algorithm is that smaller disconnected components are lost 
+A result of this algorithm is that smaller disconnected components are lost\
 Overall this algorithm transforms ~80% of the Leafsnap data and ~60% of the grapevine data that overwise would have been lost due to mislabeling (~5% of the total dataset is still thrown out since it is unable to be reconstructed with 2NN graph)
 A full readout of data % mislabeled, recovered, and lost can be found in `data_stats.csv`
 
 ### 3. ECT Matrix Creation 
 
-The final data form we desire is an Euler Characteristic Transform, represented as d concatenated Euler Characteristic Curves with resolution T, thus each ECT is a d * T length vector
+The final data form we desire is an Euler Characteristic Transform with d directions. We take directions to be linearly spaced between 0 and 2pi. These ECTs are represented as d concatenated Euler Characteristic Curves with resolution T, thus each ECT is a d * T length vector
 
-Computation of ECCs is done assuming the contour structure of the data. At a given height value we must only count the number of breaks in the label order to determine the number of connected components (since there is at most one hole, when all data points are present). This is done in `contour_ect()`
+Computation of ECCs is done assuming the contour structure of the data (input is contour_data). At a given height value we must only count the number of breaks in the label order to determine the number of connected components (since there is at most one hole, when all data points are present). This is done in `contour_ect()`
 
-I store these in "ECT matrices" (3D np arrays) where each ECT[i,j] is an ECT with a different number of linearly spaced directions and resolution determined by i and j respectively. ECT matrix creation is handled by `compute_ect.py`.
+I store these in "ECT matrices" (3D np arrays) where each ECT[i,j] is an ECT with a different number of linearly spaced directions and resolution determined by i and j respectively.\ In use it is expected that for each leaf only one ECT[i,j] is used. ECTs are padded with nans at the end (just to make the 3D np array storage work), these should be dropped in use. ECT matrix creation is handled by `compute_ect.py`.\
 Current indexing is as follows:
 
 N_ANGLES = [2, 4, 8, 16, 32]\
