@@ -56,12 +56,27 @@ example: ECT[3,4] gives the ECT with 16 linearly spaced directions on S1 and 50 
 
 Refer to this section if any data creation needs to be rerun or modified 
 
-`compute_ect.py`
+`contour_order.py`\
+Given a directory of leaf point-cloud data (from the given link), runs the above algorithm to check all data, transform labels if needed, and save as npy files in ./contour_data/ \
+Run this _one_ script, should only ever need to change the name of the input directory in the script 
 
-`contour_order.py`
+`write_ect_jobs.py`\
+Initalizes parallelization of ECT computation on all datasets by creating a job for each subdirectory.\ 
+Given a directory of data in the form of contour_data from the above function, creates jobs for each subdirectory (leaf type) that run `compute_ect.py` on the subdirectory. Job sbatch files are stored in `./submit/` and created `run.sh` submits all created .sb files. 
 
-`ect.py`
+To use: Check to see that data dir, output dir, sb dir, and HR/MEMORY for jobs is correct, then run this script to create all the jobs. Then on an HPCC node, run `/submit/run.sh` to submit all slurm jobs
 
-`ect_jobs.py`
+`compute_ect.py`\
+Script to be run by jobs created by `write_ect_jobs.py`. Creates an ECT matrix for a given subdirectory of contour data with a specified array of the number of linearly spaced angles and the threshold values (see #3 above). Should never need to be manually ran, but one DOES need to change the number of angles and thresholdings in here before running ect jobs!
 
-`contour_jobs.py`
+`ect.py`\
+Mini-package holding functions used in all scripts 
+
+## TL;DR for creating new ECT matrices 
+(Assumes that contour data is all okay-- if not refer to files section to recreate this data)
+
+1. Go into `compute_ect.py` and change the array of n_angles and thresholding to whatever you'd like
+2. Go into `write_ect_jobs.py` and make sure input and output directories are okay as well as enough time/memory is given in each job
+3. Run `run.sh` in `/submit`
+4. ECT matrices output to `/leaf_ect/`
+
