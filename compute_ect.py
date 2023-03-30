@@ -4,8 +4,8 @@ import ect
 import numpy as np
 
 # choose in this file the specifics of the ECT matrices
-N_ANGLES = [1]
-RESOLUTIONS = [2]
+N_ANGLES = [2,4,8,16,32]
+RESOLUTIONS = [2, 4, 8, 16, 32, 64]
 # overall output path for all ect files
 ect_output_path = './leaf_ect/'
 

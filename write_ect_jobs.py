@@ -8,7 +8,7 @@ output_dir = './leaf_ect/'
 sb_dir = './submit/'
 
 # hrs and memory for each job
-hrs = '1'
+hrs = '24'
 mem = '8'
 
 def write_sb(input_dir, depth, name, hrs, mem):
