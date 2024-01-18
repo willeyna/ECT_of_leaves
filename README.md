@@ -37,6 +37,7 @@ This algorithm is performed by `contour_order()`
 A result of this algorithm is that smaller disconnected components are lost\
 Overall this algorithm transforms ~80% of the Leafsnap data and ~60% of the grapevine data that overwise would have been lost due to mislabeling (~5% of the total dataset is still thrown out since it is unable to be reconstructed with 2NN graph)
 A full readout of data % mislabeled, recovered, and lost can be found in `data_stats.csv`
+A few examples of reordered leaves as well as unrecoverable ones can be found at <https://imgur.com/a/ZRc2D3V>
 
 ### 3. ECT Matrix Creation 
 
